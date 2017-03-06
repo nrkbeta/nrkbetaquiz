@@ -1,0 +1,27 @@
+.nrkbetaquiz,
+.nrkbetaquiz + * {
+  overflow: hidden;
+  transition: .5s;
+  height: 0;
+}
+.nrkbetaquiz { height: auto }
+.nrkbetaquiz label {
+  cursor: pointer;
+  display: inline-block;
+  margin: 0 7px 6px 0;
+  border-radius: 5px;
+  padding: 10px 15px;
+  background: #eee;
+  transition: .2s;
+}
+.nrkbetaquiz label:hover {
+  background: #ccc;
+}
+.nrkbetaquiz h3 {
+  color: red;
+  font: inherit;
+  animation: nrkbetaquiz forward;
+}
+@keyframes nrkbetaquiz{
+  from{transform:scale(0)}
+}
