@@ -9,7 +9,7 @@ The plugin is made for Wordpress, but the JavaScript component can easily be imp
 ## Usage
 
 1. [Download](https://github.com/nrkbeta/nrkbetaquiz/archive/master.zip) the plugin
-1. Rename the folder from nrkbetaquiz-master to nrkbetaquiz
+1. Rename the downloaded folder from `nrkbetaquiz-master` to `nrkbetaquiz`
 1. Upload it to your plugins-folder
 1. Enable the plugin in your wordpress backend
 1. Fill out the quiz questions and answers in the post admin interface
@@ -19,10 +19,10 @@ The plugin is made for Wordpress, but the JavaScript component can easily be imp
 
 If you're using a different content management system, you can still use the JavaScript component to enable this functionality on your site.
 
-The component requires a DIV right before the container which holds your comment form. The DIV has two data-attributes: data-nrkbetaquiz and data-nrkbetaquiz-error. 
+The component requires a `DIV` right before the container which holds your comment form. The `DIV` has two data-attributes: `data-nrkbetaquiz` and `data-nrkbetaquiz-error`. The `DIV` also needs the class `nrkbetaquiz`.
 
-data-nrkbetaquiz-error is a string with the error message in case the user has answered the quiz wrongfully.
-data-nrkbetaquiz is an array with the following structure:
+`data-nrkbetaquiz-error` is a string with the error message in case the user has answered the quiz wrongfully.
+`data-nrkbetaquiz` is an array with the following structure:
 
 	[{
 	    text: 'Who is the current president of The Unites States?'
