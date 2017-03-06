@@ -8,9 +8,12 @@ The plugin is made for Wordpress, but the JavaScript component can easily be imp
 
 ## Usage
 
-1. Install the plugin
-2. Fill out the quiz questions and answers in the post admin interface
-3. Start using it!
+1. [Download](https://github.com/nrkbeta/nrkbetaquiz/archive/master.zip) the plugin
+1. Rename the folder from nrkbetaquiz-master to nrkbetaquiz
+1. Upload it to your plugins-folder
+1. Enable the plugin in your wordpress backend
+1. Fill out the quiz questions and answers in the post admin interface
+1. Start using it!
 
 ## Usage (outside of Wordpress)
 
