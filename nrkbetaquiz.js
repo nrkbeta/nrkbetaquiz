@@ -41,21 +41,22 @@ document.addEventListener('DOMContentLoaded', function(){
 
     questions.forEach(function(question, index){
       container.appendChild(document.createElement('h2')).textContent = question.text;  //Render title
-      question.answer.forEach(function(answer, value){
-        answer && container.appendChild(buildAnswer(answer, NRKBCQ + index, value));
-      });
+      question.answer
+        .map(function(key, val){return key && buildAnswer(key, NRKBCQ + index, val)})
+        .sort(function(){return 0.5 - Math.random()})
+        .forEach(function(node){node && container.appendChild(node)});
     });
 
     quizNode.appendChild(container);
     quizNode.addEventListener('change', function(){
-      var done = questions.every(function(question, index){
-        var input = container.querySelector('input[name="' + NRKBCQ + index + '"]:checked');
-        return input && Number(input.value) === Number(question.correct);
-      });
-      if(done){
+      var checked = questions.map(function(q,i){return container.querySelector('input[name="' + NRKBCQ + i + '"]:checked')});
+      var correct = questions.every(function(q,i){return checked[i] && Number(checked[i].value) === Number(q.correct)});
+      var failure = !correct && checked.filter(Boolean).length === questions.length;
+      
+      if(correct){
         localStorage.setItem(correctId, correctId);
         removeQuiz(quizNode, formNode);
-      }else{
+      }else if(failure){
         container.appendChild(errorNode);
       }
     });
