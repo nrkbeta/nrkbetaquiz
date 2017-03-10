@@ -25,7 +25,7 @@ The component requires a `DIV` right before the container which holds your comme
 `data-nrkbetaquiz` is an array with the following structure:
 
 	[{
-	    text: 'Who is the current president of The Unites States?'
+	    text: 'Who is the current president of the United States?'
 	    answers: ['Barack Obama', 'Donald Trump', 'Steve Bannon'],
 	    correct: 1
 	  }, {
@@ -40,7 +40,7 @@ Here's a full example of the implementation:
 	<script src="nrkbetaquiz.js"></script>
 	<div class="nrkbetaquiz"
 	  data-nrkbetaquiz="[{
-	      text: 'Who is the current president of The Unites States?'
+	      text: 'Who is the current president of the United States?'
 	      answers: ['Barack Obama', 'Donald Trump', 'Steve Bannon'],
 	      correct: 1
 	    }, {
