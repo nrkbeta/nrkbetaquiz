@@ -39,7 +39,7 @@ function nrkbetaquiz_form() {
     if ( nrkbetaquiz_post_has_quiz( $post ) ) {
 ?>
   <div class="<?php esc_attr_e( NRKBCQ ); ?>"
-    data-<?php esc_attr_e( NRKBCQ ); ?>="<?php echo esc_attr( urlencode( json_encode( get_post_meta( get_the_ID(), 'nrkbetaquiz' ) ) ) ); ?>"
+    data-<?php esc_attr_e( NRKBCQ ); ?>="<?php echo esc_attr( rawurlencode( json_encode( get_post_meta( get_the_ID(), 'nrkbetaquiz' ) ) ) ); ?>"
     data-<?php esc_attr_e( NRKBCQ ); ?>-error="<?php esc_attr_e( 'You have not answered the quiz correctly. Try again.', 'nrkbetaquiz' ); ?>">
     <h2><?php esc_html_e( 'Would you like to comment? Please answer some quiz questions from the story.', 'nrkbetaquiz' );?></h2>
     <p><?php esc_html_e( "
