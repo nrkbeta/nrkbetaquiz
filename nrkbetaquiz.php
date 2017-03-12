@@ -147,7 +147,7 @@ function nrkbetaquiz_pre_comment_on_post( $post_id ) {
 
     $answers = array_intersect_key( $_POST, $correct_answers );
     $permalink = get_permalink( $post_id );
-    if ( array_diff( $answers, $correct_answers ) ) {
+    if ( ( count( $answers ) !== count( $correct_answers ) ) || array_diff( $answers, $correct_answers ) ) {
         // The user did not answer all quiz question(s) correctly.
         $redirect = $permalink;
         $redirect .= '?' . rawurlencode( NRKBCQ . '_quiz_error' ) . '=1';
