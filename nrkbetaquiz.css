@@ -1,27 +1,27 @@
-.nrkbetaquiz,
-.nrkbetaquiz + * {
-  overflow: hidden;
-  transition: .5s;
-  height: 0;
-}
-.nrkbetaquiz { height: auto }
-.nrkbetaquiz label {
-  cursor: pointer;
-  display: inline-block;
-  margin: 0 7px 6px 0;
-  border-radius: 5px;
-  padding: 10px 15px;
-  background: #eee;
-  transition: .2s;
+.nrkbetaquiz label.answer {
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 7px 6px 0;
+    border-radius: 5px;
+    padding: 10px 15px;
+    background: #eee;
 }
 .nrkbetaquiz label:hover {
-  background: #ccc;
+    background: #ccc;
 }
-.nrkbetaquiz h3 {
-  color: red;
-  font: inherit;
-  animation: nrkbetaquiz forward;
+.nrkbetaquiz p.correct,
+.nrkbetaquiz p.error {
+    font: inherit;
+    animation: .5s nrkbetaquiz;
 }
-@keyframes nrkbetaquiz{
-  from{transform:scale(0)}
+.nrkbetaquiz p.correct {
+    color: green;
+    font-weight: bold;
+}
+.nrkbetaquiz p.error {
+    color: red;
+}
+@keyframes nrkbetaquiz {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
 }

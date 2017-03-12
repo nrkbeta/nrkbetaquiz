@@ -25,50 +25,43 @@ add_action( 'wp_enqueue_scripts', function() {
   wp_enqueue_style( NRKBCQ, plugins_url( 'nrkbetaquiz.css', __FILE__ ) );
 });
 
-add_action( 'comment_form_before', 'nrkbetaquiz_form' );
+add_action( 'comment_form_top', 'nrkbetaquiz_form' );
 /**
- * Prints the commenting quiz before WordPress's comment form.
+ * Prints the comment quiz atop WordPress's comment form.
  *
- * @TODO This functionality should be moved into the `nrkbetaquiz_form_top()`
- *       function, but I don't want to move it quite yet because I'm not yet
- *       touching any of the JavaScript, and a lot of the code still uses
- *       DOM hierarchy to function properly.
+ * This outputs the JavaScript-hooked element and initial greeting. A
+ * different function, `nrkbetaquiz_form_no_js`, prints the HTML-only
+ * version of the same quiz and is used when JavaScript is disabled.
  */
 function nrkbetaquiz_form() {
-    global $post;
-    if ( nrkbetaquiz_post_has_quiz( $post ) ) {
+    if ( nrkbetaquiz_post_has_quiz( get_post() ) ) {
 ?>
   <div class="<?php esc_attr_e( NRKBCQ ); ?>"
     data-<?php esc_attr_e( NRKBCQ ); ?>="<?php echo esc_attr( rawurlencode( json_encode( get_post_meta( get_the_ID(), 'nrkbetaquiz' ) ) ) ); ?>"
-    data-<?php esc_attr_e( NRKBCQ ); ?>-error="<?php esc_attr_e( 'You have not answered the quiz correctly. Try again.', 'nrkbetaquiz' ); ?>">
+    data-<?php esc_attr_e( NRKBCQ ); ?>-error="<?php esc_attr_e( 'You have not answered the quiz correctly. Try again.', 'nrkbetaquiz' ); ?>"
+    data-<?php esc_attr_e( NRKBCQ ); ?>-correct="<?php esc_attr_e( 'You answered the quiz correctly! You may now post your comment.', 'nrkbetaquiz' ); ?>"
+  >
     <h2><?php esc_html_e( 'Would you like to comment? Please answer some quiz questions from the story.', 'nrkbetaquiz' );?></h2>
-    <p><?php esc_html_e( "
-      We care about our comments.
+    <p><?php esc_html_e( "We care about our comments.
       That's why we want to make sure that everyone who comments have actually read the story.
       Answer a short quiz about the story to post your comment.
     ", 'nrkbetaquiz' ); ?></p>
   </div>
 <?php
+        nrkbetaquiz_form_no_js();
     }
 }
 
-add_action( 'comment_form_top', 'nrkbetaquiz_form_top' );
 /**
- * Prints the commenting quiz at the top of the WordPress comment form.
+ * Prints the HTML-only quiz at the top of the WordPress comment form.
  */
-function nrkbetaquiz_form_top() {
-    global $post;
-    if ( nrkbetaquiz_post_has_quiz( $post ) ) {
-        $quiz = get_post_meta( $post->ID, NRKBCQ );
+function nrkbetaquiz_form_no_js() {
+    if ( nrkbetaquiz_post_has_quiz( get_post() ) ) {
+        $quiz = get_post_meta( get_the_ID(), NRKBCQ );
         $answer_hash = hash( 'sha256', serialize( $quiz ) );
 ?>
     <noscript>
-        <?php
-        // TODO: Remove this CSS once JS-dependant quiz is not needed.
-        echo '<style>#respond { height: auto; }</style>';
-
-        if ( isset( $_GET[ NRKBCQ . '_quiz_error' ] ) ) {
-        ?>
+        <?php if ( isset( $_GET[ NRKBCQ . '_quiz_error' ] ) ) { ?>
             <p class="error"><?php esc_html_e( 'You have not answered the quiz correctly. Try again.', 'nrkbetaquiz' ); ?></p>
         <?php
         }
@@ -253,15 +246,17 @@ add_action('save_post', 'nrkbetaquiz_save', 10, 3);
  *
  * @link https://developer.wordpress.org/reference/hooks/save_post/
  */
-function nrkbetaquiz_save($post_id, $post, $update){
-  if(isset($_POST[NRKBCQ], $_POST[NRKBCQ_NONCE]) && wp_verify_nonce($_POST[NRKBCQ_NONCE], NRKBCQ)){
-    delete_post_meta($post_id, NRKBCQ);                         //Clean up previous quiz meta
-    foreach($_POST[NRKBCQ] as $k=>$v){
-      if($v['text'] && array_filter($v['answer'], 'strlen')){   //Only save filled in questions
-        add_post_meta($post_id, NRKBCQ, $v);
-      }
+function nrkbetaquiz_save( $post_id, $post, $update ) {
+    if( isset( $_POST[NRKBCQ], $_POST[NRKBCQ_NONCE] ) && wp_verify_nonce( $_POST[NRKBCQ_NONCE], NRKBCQ ) ) {
+        // Clean up previous quiz meta
+        delete_post_meta( $post_id, NRKBCQ );
+        foreach( $_POST[NRKBCQ] as $k => $v ) {
+            // Only save filled in questions
+            if( $v['text'] && array_filter( $v['answer'], 'strlen' ) ) {
+                add_post_meta( $post_id, NRKBCQ, $v );
+            }
+        }
     }
-  }
 }
 
 /**
