@@ -60,6 +60,7 @@ function nrkbetaquiz_form_top() {
     global $post;
     if ( nrkbetaquiz_post_has_quiz( $post ) ) {
         $quiz = get_post_meta( $post->ID, NRKBCQ );
+        $answer_hash = hash( 'sha256', serialize( $quiz ) );
 ?>
     <noscript>
         <?php
@@ -84,31 +85,33 @@ function nrkbetaquiz_form_top() {
             );
         }
 
-        foreach ( $quiz as $i => $question ) { ?>
-        <div class="<?php esc_attr_e( NRKBCQ . '-quiz-question-' . $i ); ?>">
-            <h2><?php esc_html_e( $question['text'] ); ?></h2>
-            <ul>
-            <?php
-            // Randomize the order in which answers are shown.
-            $answers = array();
-            foreach ( $question[ 'answer' ] as $k => $v ) {
-                $answers[] = array( 'value' => $k, 'text' => $v );
-            }
-            shuffle($answers);
-            foreach ( $answers as $j => $answer ) {
-            ?>
-                <li class="<?php esc_attr_e( NRKBCQ ); ?>-quiz-answer-<?php esc_attr_e( $j ); ?>">
-                    <label>
-                        <input type="radio"
-                            name="<?php esc_attr_e( NRKBCQ . $i ); ?>"
-                            value="<?php esc_attr_e( $answer[ 'value' ] ); ?>"
-                        />
-                        <?php esc_html_e( $answer[ 'text' ] ); ?>
-                    </label>
-            <?php } ?>
+        if ( ! isset( $_COOKIE[ NRKBCQ . '_comment_quiz_' . COOKIEHASH ] ) || $answer_hash !== $_COOKIE[ NRKBCQ . '_comment_quiz_' . COOKIEHASH ] ) {
+            foreach ( $quiz as $i => $question ) { ?>
+            <div class="<?php esc_attr_e( NRKBCQ . '-quiz-question-' . $i ); ?>">
+                <h2><?php esc_html_e( $question['text'] ); ?></h2>
+                <ul>
+                <?php
+                // Randomize the order in which answers are shown.
+                $answers = array();
+                foreach ( $question[ 'answer' ] as $k => $v ) {
+                    $answers[] = array( 'value' => $k, 'text' => $v );
+                }
+                shuffle($answers);
+                foreach ( $answers as $j => $answer ) {
+                ?>
+                    <li class="<?php esc_attr_e( NRKBCQ ); ?>-quiz-answer-<?php esc_attr_e( $j ); ?>">
+                        <label>
+                            <input type="radio"
+                                name="<?php esc_attr_e( NRKBCQ . $i ); ?>"
+                                value="<?php esc_attr_e( $answer[ 'value' ] ); ?>"
+                            />
+                            <?php esc_html_e( $answer[ 'text' ] ); ?>
+                        </label>
+                <?php } ?>
             </ul>
         </div>
 <?php
+            }
         }
 ?>
     </noscript>
@@ -130,23 +133,33 @@ function nrkbetaquiz_pre_comment_on_post( $post_id ) {
         return; // Don't do anything on a post without a quiz.
     }
 
-    $quiz = get_post_meta( $post_id, NRKBCQ );
-
     // Collect correct answers.
+    $quiz = get_post_meta( $post_id, NRKBCQ );
     $correct_answers = array();
     foreach ( $quiz as $i => $questions ) {
         $correct_answers[ NRKBCQ . $i ] = $questions[ 'correct' ];
     }
+    $answer_hash = hash( 'sha256', serialize( $quiz ) );
+
+    if ( isset( $_COOKIE[ NRKBCQ . '_comment_quiz_' . COOKIEHASH ] ) && $answer_hash === $_COOKIE[ NRKBCQ . '_comment_quiz_' . COOKIEHASH ] ) {
+        return; // Don't verify quiz answers if we've already answered them.
+    }
+
     $answers = array_intersect_key( $_POST, $correct_answers );
+    $permalink = get_permalink( $post_id );
     if ( array_diff( $answers, $correct_answers ) ) {
         // The user did not answer all quiz question(s) correctly.
-        $redirect = get_permalink( $post_id );
+        $redirect = $permalink;
         $redirect .= '?' . rawurlencode( NRKBCQ . '_quiz_error' ) . '=1';
         $redirect .= '&' . rawurlencode( NRKBCQ . '_comment_content' ) . '=' . rawurlencode( $_POST[ 'comment' ] );
         wp_safe_redirect( $redirect . '#respond' );
         exit();
     } else {
         // The user answered every question correctly. Proceed. :)
+        $secure = ( 'https' === parse_url( home_url(), PHP_URL_SCHEME ) );
+        $path = parse_url( $permalink, PHP_URL_PATH );
+        $comment_cookie_lifetime = apply_filters( 'comment_cookie_lifetime', 3 * HOUR_IN_SECONDS );
+        setcookie( NRKBCQ . '_comment_quiz_' . COOKIEHASH, $answer_hash, time() + $comment_cookie_lifetime, $path, COOKIE_DOMAIN, $secure, true );
         return;
     }
 }
