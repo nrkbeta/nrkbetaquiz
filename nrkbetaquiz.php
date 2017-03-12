@@ -17,16 +17,22 @@
  * @license https://www.gnu.org/licenses/gpl-3.0.en.html
  */
 
-define('NRKBCQ', 'nrkbetaquiz');
-define('NRKBCQ_NONCE', NRKBCQ . '-nonce');
+define( 'NRKBCQ', 'nrkbetaquiz' );
+define( 'NRKBCQ_NONCE', NRKBCQ . '-nonce' );
 
-add_action('wp_enqueue_scripts', function(){
-  wp_enqueue_script(NRKBCQ, plugins_url('nrkbetaquiz.js', __FILE__));
-  wp_enqueue_style(NRKBCQ, plugins_url('nrkbetaquiz.css', __FILE__));
+add_action( 'wp_enqueue_scripts', function() {
+  wp_enqueue_script( NRKBCQ, plugins_url( 'nrkbetaquiz.js', __FILE__ ) );
+  wp_enqueue_style( NRKBCQ, plugins_url( 'nrkbetaquiz.css', __FILE__ ) );
 });
 
-add_action('comment_form_before', 'nrkbetaquiz_form');
-function nrkbetaquiz_form(){ ?>
+add_action( 'comment_form_before', 'nrkbetaquiz_form' );
+/**
+ * Prints the commenting quiz before WordPress's comment form.
+ */
+function nrkbetaquiz_form() {
+    global $post;
+    if ( nrkbetaquiz_post_has_quiz( $post ) ) {
+?>
   <div class="<?php esc_attr_e(NRKBCQ); ?>"
     data-<?php esc_attr_e(NRKBCQ); ?>="<?php echo esc_attr(urlencode(json_encode(get_post_meta(get_the_ID(), 'nrkbetaquiz')))); ?>"
     data-<?php esc_attr_e(NRKBCQ); ?>-error="<?php esc_attr_e('You have not answered the quiz correctly. Try again.', 'nrkbetaquiz'); ?>">
@@ -38,13 +44,27 @@ function nrkbetaquiz_form(){ ?>
     ", 'nrkbetaquiz');?></p>
     <noscript><?php _e(sprintf(esc_html('Please %1$senable javascript%2$s to comment'), '<a href="http://enable-javascript.com/" target="_blank" style="text-decoration:underline">', '</a>'), 'nrkbetaquiz');?></noscript>
   </div>
-<?php }
+<?php
+    }
+}
 
 add_action('add_meta_boxes', 'nrkbetaquiz_add');
+/**
+ * Registers the quiz's meta box.
+ *
+ * @uses nrkbetaquiz_edit
+ *
+ * @link https://developer.wordpress.org/reference/hooks/add_meta_boxes/
+ */
 function nrkbetaquiz_add(){
   add_meta_box(NRKBCQ, 'CommentQuiz', 'nrkbetaquiz_edit', 'post', 'side', 'high');
 }
 
+/**
+ * Prints the quiz's Meta Box when editing a post.
+ *
+ * @param WP_Post $post
+ */
 function nrkbetaquiz_edit($post){
   $questions = array_pad(get_post_meta($post->ID, NRKBCQ), 1, array());
   $addmore = esc_html(__('Add question +', 'nrkbetaquiz'));
@@ -90,6 +110,15 @@ function nrkbetaquiz_edit($post){
 }
 
 add_action('save_post', 'nrkbetaquiz_save', 10, 3);
+/**
+ * Saves a post's commenting quiz to the database on post save.
+ *
+ * @param int $post_id
+ * @param WP_Post $post
+ * @param bool $update
+ *
+ * @link https://developer.wordpress.org/reference/hooks/save_post/
+ */
 function nrkbetaquiz_save($post_id, $post, $update){
   if(isset($_POST[NRKBCQ], $_POST[NRKBCQ_NONCE]) && wp_verify_nonce($_POST[NRKBCQ_NONCE], NRKBCQ)){
     delete_post_meta($post_id, NRKBCQ);                         //Clean up previous quiz meta
@@ -99,4 +128,15 @@ function nrkbetaquiz_save($post_id, $post, $update){
       }
     }
   }
+}
+
+/**
+ * Determines whether or not a given post has an associated quiz.
+ *
+ * @param WP_Post $post
+ *
+ * @return bool
+ */
+function nrkbetaquiz_post_has_quiz( $post ) {
+    return ( empty( get_post_meta( $post->ID, NRKBCQ, true ) ) ) ? false : true;
 }
