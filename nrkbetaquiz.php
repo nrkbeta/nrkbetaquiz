@@ -28,27 +28,127 @@ add_action( 'wp_enqueue_scripts', function() {
 add_action( 'comment_form_before', 'nrkbetaquiz_form' );
 /**
  * Prints the commenting quiz before WordPress's comment form.
+ *
+ * @TODO This functionality should be moved into the `nrkbetaquiz_form_top()`
+ *       function, but I don't want to move it quite yet because I'm not yet
+ *       touching any of the JavaScript, and a lot of the code still uses
+ *       DOM hierarchy to function properly.
  */
 function nrkbetaquiz_form() {
     global $post;
     if ( nrkbetaquiz_post_has_quiz( $post ) ) {
 ?>
-  <div class="<?php esc_attr_e(NRKBCQ); ?>"
-    data-<?php esc_attr_e(NRKBCQ); ?>="<?php echo esc_attr(urlencode(json_encode(get_post_meta(get_the_ID(), 'nrkbetaquiz')))); ?>"
-    data-<?php esc_attr_e(NRKBCQ); ?>-error="<?php esc_attr_e('You have not answered the quiz correctly. Try again.', 'nrkbetaquiz'); ?>">
-    <h2><?php esc_html_e('Would you like to comment? Please answer some quiz questions from the story.', 'nrkbetaquiz');?></h2>
-    <p><?php esc_html_e("
+  <div class="<?php esc_attr_e( NRKBCQ ); ?>"
+    data-<?php esc_attr_e( NRKBCQ ); ?>="<?php echo esc_attr( urlencode( json_encode( get_post_meta( get_the_ID(), 'nrkbetaquiz' ) ) ) ); ?>"
+    data-<?php esc_attr_e( NRKBCQ ); ?>-error="<?php esc_attr_e( 'You have not answered the quiz correctly. Try again.', 'nrkbetaquiz' ); ?>">
+    <h2><?php esc_html_e( 'Would you like to comment? Please answer some quiz questions from the story.', 'nrkbetaquiz' );?></h2>
+    <p><?php esc_html_e( "
       We care about our comments.
       That's why we want to make sure that everyone who comments have actually read the story.
-      Answer a couple of questions from the story to unlock the comment form.
-    ", 'nrkbetaquiz');?></p>
-    <noscript><?php _e(sprintf(esc_html('Please %1$senable javascript%2$s to comment'), '<a href="http://enable-javascript.com/" target="_blank" style="text-decoration:underline">', '</a>'), 'nrkbetaquiz');?></noscript>
+      Answer a short quiz about the story to post your comment.
+    ", 'nrkbetaquiz' ); ?></p>
   </div>
 <?php
     }
 }
 
-add_action('add_meta_boxes', 'nrkbetaquiz_add');
+add_action( 'comment_form_top', 'nrkbetaquiz_form_top' );
+/**
+ * Prints the commenting quiz at the top of the WordPress comment form.
+ */
+function nrkbetaquiz_form_top() {
+    global $post;
+    if ( nrkbetaquiz_post_has_quiz( $post ) ) {
+        $quiz = get_post_meta( $post->ID, NRKBCQ );
+        // TODO: Remove this CSS once JS-dependant quiz is not needed.
+        echo '<style>#respond { height: auto; }</style>';
+?>
+    <noscript>
+        <?php if ( isset( $_GET[ NRKBCQ . '_quiz_error' ] ) ) { ?>
+            <p class="error"><?php esc_html_e( 'You have not answered the quiz correctly. Try again.', 'nrkbetaquiz' ); ?></p>
+        <?php
+        }
+        // Retain the user's entered comment even if they got the quiz wrong.
+        if ( isset( $_GET[ NRKBCQ . '_comment_content' ] ) ) {
+            add_filter( 'comment_form_field_comment', function ( $text ) {
+                    $pos = strpos( $text, '</textarea>' );
+                    return substr_replace(
+                        $text,
+                        esc_html( rawurldecode( stripslashes_deep( $_GET[ NRKBCQ . '_comment_content' ] ) ) ) . '</textarea>',
+                        $pos
+                    );
+                }
+            );
+        }
+
+        foreach ( $quiz as $i => $question ) { ?>
+        <div class="<?php esc_attr_e( NRKBCQ . '-quiz-question-' . $i ); ?>">
+            <h2><?php esc_html_e( $question['text'] ); ?></h2>
+            <ul>
+            <?php
+            // Randomize the order in which answers are shown.
+            $answers = array();
+            foreach ( $question[ 'answer' ] as $k => $v ) {
+                $answers[] = array( 'value' => $k, 'text' => $v );
+            }
+            shuffle($answers);
+            foreach ( $answers as $j => $answer ) {
+            ?>
+                <li class="<?php esc_attr_e( NRKBCQ ); ?>-quiz-answer-<?php esc_attr_e( $j ); ?>">
+                    <label>
+                        <input type="radio"
+                            name="<?php esc_attr_e( NRKBCQ . $i ); ?>"
+                            value="<?php esc_attr_e( $answer[ 'value' ] ); ?>"
+                        />
+                        <?php esc_html_e( $answer[ 'text' ] ); ?>
+                    </label>
+            <?php } ?>
+            </ul>
+        </div>
+<?php
+        }
+?>
+    </noscript>
+<?php
+    }
+}
+
+add_action( 'pre_comment_on_post', 'nrkbetaquiz_pre_comment_on_post' );
+/**
+ * Tests a user's answers to the comment quiz before allowing their
+ * comment to be added.
+ *
+ * @param int $post_id
+ *
+ * @link https://developer.wordpress.org/reference/hooks/pre_comment_on_post/
+ */
+function nrkbetaquiz_pre_comment_on_post( $post_id ) {
+    if ( ! nrkbetaquiz_post_has_quiz( get_post($post_id) ) ) {
+        return; // Don't do anything on a post without a quiz.
+    }
+
+    $quiz = get_post_meta( $post_id, NRKBCQ );
+
+    // Collect correct answers.
+    $correct_answers = array();
+    foreach ( $quiz as $i => $questions ) {
+        $correct_answers[ NRKBCQ . $i ] = $questions[ 'correct' ];
+    }
+    $answers = array_intersect_key( $_POST, $correct_answers );
+    if ( array_diff( $answers, $correct_answers ) ) {
+        // The user did not answer all quiz question(s) correctly.
+        $redirect = get_permalink( $post_id );
+        $redirect .= '?' . rawurlencode( NRKBCQ . '_quiz_error' ) . '=1';
+        $redirect .= '&' . rawurlencode( NRKBCQ . '_comment_content' ) . '=' . rawurlencode( $_POST[ 'comment' ] );
+        wp_safe_redirect( $redirect . '#respond' );
+        exit();
+    } else {
+        // The user answered every question correctly. Proceed. :)
+        return;
+    }
+}
+
+add_action( 'add_meta_boxes', 'nrkbetaquiz_add' );
 /**
  * Registers the quiz's meta box.
  *
@@ -56,8 +156,8 @@ add_action('add_meta_boxes', 'nrkbetaquiz_add');
  *
  * @link https://developer.wordpress.org/reference/hooks/add_meta_boxes/
  */
-function nrkbetaquiz_add(){
-  add_meta_box(NRKBCQ, 'CommentQuiz', 'nrkbetaquiz_edit', 'post', 'side', 'high');
+function nrkbetaquiz_add() {
+  add_meta_box( NRKBCQ, 'CommentQuiz', 'nrkbetaquiz_edit', 'post', 'side', 'high' );
 }
 
 /**
