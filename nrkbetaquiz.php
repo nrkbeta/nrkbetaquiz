@@ -160,39 +160,22 @@ add_action( 'add_meta_boxes', 'nrkbetaquiz_add' );
  * @link https://developer.wordpress.org/reference/hooks/add_meta_boxes/
  */
 function nrkbetaquiz_add() {
-  add_meta_box( NRKBCQ, 'CommentQuiz', 'nrkbetaquiz_edit', 'post', 'side', 'high' );
+  add_meta_box( NRKBCQ, __('Comment Quiz', 'nrkbetaquiz'), 'nrkbetaquiz_edit', 'post', 'side', 'high' );
 }
 
 /**
  * Prints the quiz's Meta Box when editing a post.
  *
  * @param WP_Post $post
+ *
+ * @uses print_quiz_question_edit_html
  */
-function nrkbetaquiz_edit($post){
-  $questions = array_pad(get_post_meta($post->ID, NRKBCQ), 1, array());
-  $addmore = esc_html(__('Add question +', 'nrkbetaquiz'));
-  $correct = esc_html(__('Correct', 'nrkbetaquiz'));
-  $answer = esc_attr(__('Answer', 'nrkbetaquiz'));
-
-  foreach($questions as $index => $question){
-    $title = __('Question', 'nrkbetaquiz') . ' ' . ($index + 1);
-    $text = esc_attr(empty($question['text'])? '' : $question['text']);
-    $name = NRKBCQ . '[' . $index . ']';
-
-    echo '<div style="margin-bottom:1em;padding-bottom:1em;border-bottom:1px solid #eee">';
-    echo '<label><strong>' . esc_html($title) . ':</strong><br><input type="text" name="' . esc_attr($name) . '[text]" value="' . esc_attr($text) . '"></label>';
-    for($i = 0; $i<3; $i++){
-      $check = checked($i, isset($question['correct'])? intval($question['correct']) : 0, false);
-      $value = isset($question['answer'][$i])? esc_attr($question['answer'][$i]) : '';
-
-      echo '<br><input type="text" name="' . esc_attr($name) . '[answer][' . esc_attr($i) . ']" placeholder="' . esc_attr($answer) . '" value="' . esc_attr($value) . '">';
-      echo '<label><input type="radio" name="' . esc_attr($name) . '[correct]" value="' . esc_attr($i) . '"' .$check . '> ' . esc_html($correct) . '</label>';
-    }
-    echo '</div>';
-  }
-  echo '<button class="button" type="button" data-' . esc_attr(NRKBCQ) . '>' . esc_html($addmore) . '</button>';
-
-  ?><script>
+function nrkbetaquiz_edit( $post ) {
+    nrkbetaquiz_print_quiz_question_edit_html( $post );
+    $addmore = esc_html( __( 'Add question +', 'nrkbetaquiz' ) );
+    echo '<button class="button hide-if-no-js" type="button" data-' . esc_attr( NRKBCQ ) . '>' . esc_html( $addmore ) . '</button>';
+?><script>
+    // Add another question to the quiz editing form.
     document.addEventListener('click', function(event){
       if(event.target.hasAttribute('data-<?php echo esc_js(esc_attr(NRKBCQ)); ?>')){
         var button = event.target;
@@ -209,7 +192,42 @@ function nrkbetaquiz_edit($post){
       }
     });
   </script>
-  <?php wp_nonce_field(NRKBCQ, NRKBCQ_NONCE);
+  <?php wp_nonce_field( NRKBCQ, NRKBCQ_NONCE );
+}
+
+/**
+ * Prints the HTML for a quiz question in the edit form.
+ *
+ * @param WP_Post $post
+ */
+function nrkbetaquiz_print_quiz_question_edit_html ( $post ) {
+    $quiz = get_post_meta( $post->ID, NRKBCQ );
+    $questions = array_pad( $quiz, count($quiz) + 1, array() );
+
+    $answer = esc_attr( __( 'Answer', 'nrkbetaquiz' ) );
+    $ask = esc_attr( __( 'Question', 'nrkbetaquiz' ) );
+    $correct = esc_html( __( 'Correct', 'nrkbetaquiz' ) );
+
+    foreach( $questions as $index => $question ) {
+        $title = __( 'Question', 'nrkbetaquiz' ) . ' ' . ( $index + 1 );
+        $text = esc_attr( empty( $question[ 'text' ] ) ? '' : $question[ 'text' ] );
+        $name = NRKBCQ . '[' . $index . ']';
+
+        echo '<div style="margin-bottom:1em;padding-bottom:1em;border-bottom:1px solid #eee">';
+        echo '<p><label><strong style="display:block;">' . esc_html( $title ) . ':</strong><input type="text" name="' . esc_attr( $name ) . '[text]" placeholder="' . esc_attr( $ask ) . '" value="' . esc_attr( $text ) . '"></label></p>';
+        echo '<ul>';
+        for( $i = 0; $i < 3; $i++ ) {
+            $check = checked( $i, isset( $question[ 'correct' ] ) ? intval( $question[ 'correct' ] ) : 0, false );
+            $value = isset( $question[ 'answer' ][ $i ] ) ? esc_attr( $question[ 'answer' ][ $i ] ) : '';
+
+            echo '<li>';
+            echo '<input type="text" name="' . esc_attr( $name ) . '[answer][' . esc_attr( $i ) . ']" placeholder="' . esc_attr( $answer ) . '" value="' . esc_attr( $value ) . '">';
+            echo '<label><input type="radio" name="' . esc_attr( $name ) . '[correct]" value="' . esc_attr( $i ) . '"' .$check . '> ' . esc_html( $correct ) . '</label>';
+            echo '</li>';
+        }
+        echo '</ul>';
+        echo '</div>';
+    }
 }
 
 add_action('save_post', 'nrkbetaquiz_save', 10, 3);
