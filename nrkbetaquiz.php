@@ -60,11 +60,14 @@ function nrkbetaquiz_form_top() {
     global $post;
     if ( nrkbetaquiz_post_has_quiz( $post ) ) {
         $quiz = get_post_meta( $post->ID, NRKBCQ );
-        // TODO: Remove this CSS once JS-dependant quiz is not needed.
-        echo '<style>#respond { height: auto; }</style>';
 ?>
     <noscript>
-        <?php if ( isset( $_GET[ NRKBCQ . '_quiz_error' ] ) ) { ?>
+        <?php
+        // TODO: Remove this CSS once JS-dependant quiz is not needed.
+        echo '<style>#respond { height: auto; }</style>';
+
+        if ( isset( $_GET[ NRKBCQ . '_quiz_error' ] ) ) {
+        ?>
             <p class="error"><?php esc_html_e( 'You have not answered the quiz correctly. Try again.', 'nrkbetaquiz' ); ?></p>
         <?php
         }
