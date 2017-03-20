@@ -85,6 +85,14 @@ function nrkbetaquiz_save($post_id, $post, $update){
     delete_post_meta($post_id, NRKBCQ);                         //Clean up previous quiz meta
     foreach($_POST[NRKBCQ] as $k=>$v){
       if($v['text'] && array_filter($v['answer'], 'strlen')){   //Only save filled in questions
+
+        // Sanitizing data input
+        foreach ( $v as $key => $value ) {
+          $key = wp_kses_post( $key );
+          $value = wp_kses_post( $value );
+          $v[$key] = $value;
+        }
+
         add_post_meta($post_id, NRKBCQ, $v);
       }
     }
