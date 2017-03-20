@@ -27,7 +27,7 @@ The component requires a `DIV` right before the container which holds your comme
 	[{
 	    text: 'Who is the current president of the United States?'
 	    answers: ['Barack Obama', 'Donald Trump', 'Steve Bannon'],
-	    correct: 1
+	    correct: 2
 	  }, {
 	    text: 'What is the radius of Earth?'
 	    answers: ['6 371 kilometers', '371 kilometers', '200 kilometers'],
@@ -42,7 +42,7 @@ Here's a full example of the implementation:
 	  data-nrkbetaquiz="[{
 	      text: 'Who is the current president of the United States?'
 	      answers: ['Barack Obama', 'Donald Trump', 'Steve Bannon'],
-	      correct: 1
+	      correct: 2
 	    }, {
 	      text: 'What is the radius of Earth?'
 	      answers: ['6 371 kilometers', '371 kilometers', '200 kilometers'],
