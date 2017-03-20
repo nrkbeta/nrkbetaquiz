@@ -19,36 +19,41 @@ The plugin is made for Wordpress, but the JavaScript component can easily be imp
 
 If you're using a different content management system, you can still use the JavaScript component to enable this functionality on your site.
 
-The component requires a `DIV` right before the container which holds your comment form. The `DIV` has two data-attributes: `data-nrkbetaquiz` and `data-nrkbetaquiz-error`. The `DIV` also needs the class `nrkbetaquiz`.
+The component requires a `DIV` to be inserted as a direct child of your comment form. The `DIV` has three `data-`attributes: `data-nrkbetaquiz`, `data-nrkbetaquiz-error`, and `data-nrkbetaquiz-correct`. The `DIV` also needs the class `nrkbetaquiz`.
 
-`data-nrkbetaquiz-error` is a string with the error message in case the user has answered the quiz wrongfully.
-`data-nrkbetaquiz` is an array with the following structure:
+* `data-nrkbetaquiz-error` is a string with the error message in case the user has answered the quiz wrongfully.
+* `data-nrkbetaquiz-correct` is a string with the success message when the user answers the quiz correctly.
+* `data-nrkbetaquiz` is a [JSON](http://json.org/) array with the following structure:  
 
-	[{
-	    text: 'Who is the current president of The Unites States?'
-	    answers: ['Barack Obama', 'Donald Trump', 'Steve Bannon'],
-	    correct: 1
-	  }, {
-	    text: 'What is the radius of Earth?'
-	    answers: ['6 371 kilometers', '371 kilometers', '200 kilometers'],
-	    correct: 0
-	}]
-
+  ```json
+  [{
+      "text": "Who is the current president of The Unites States?",
+      "answers": ["Barack Obama", "Donald Trump", "Steve Bannon"],
+      "correct": 1
+    }, {
+      "text": "What is the radius of Earth?",
+      "answers": ["6,371 kilometers", "371 kilometers", "200 kilometers"],
+      "correct": 0
+  }]
+  ```
 
 Here's a full example of the implementation:
 
-	<script src="nrkbetaquiz.js"></script>
-	<div class="nrkbetaquiz"
-	  data-nrkbetaquiz="[{
-	      text: 'Who is the current president of The Unites States?'
-	      answers: ['Barack Obama', 'Donald Trump', 'Steve Bannon'],
-	      correct: 1
-	    }, {
-	      text: 'What is the radius of Earth?'
-	      answers: ['6 371 kilometers', '371 kilometers', '200 kilometers'],
-	      correct: 0
-	  }]"
-	  data-nrkbetaquiz-error="You fail">
-	</div>
-
-	<div id="YOUR_COMMENT_FORM_CONTAINER"></div>
+```html
+<form id="YOUR_COMMENT_FORM_CONTAINER">
+    <script src="nrkbetaquiz.js"></script>
+    <div class="nrkbetaquiz"
+        data-nrkbetaquiz='[{
+                "text": "Who is the current president of The Unites States?",
+                "answers": ["Barack Obama", "Donald Trump", "Steve Bannon"],
+                "correct": 1
+            }, {
+                "text": "What is the radius of Earth?",
+                "answers": ["6,371 kilometers", "371 kilometers", "200 kilometers"],
+                "correct": 0
+            }]'
+        data-nrkbetaquiz-error="You fail"
+        data-nrkbetaquiz-correct="You succeed"
+    ></div>
+</form>
+```

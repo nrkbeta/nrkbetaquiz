@@ -6,18 +6,9 @@ document.addEventListener('DOMContentLoaded', function(){
     catch(err){return []}
   };
 
-  var removeQuiz = function(quizNode, formNode){
-    quizNode.style.height = quizNode.offsetHeight + 'px';
-    formNode.style.height = formNode.scrollHeight + 'px';
-    quizNode.style.height = '0px';
-    setTimeout(function(){
-      quizNode.style.display = 'none';
-      formNode.style.height = 'auto';
-    }, 500);
-  };
-
   var buildAnswer = function(text, name, value){
     var label = document.createElement('label');
+    label.className = 'answer';
     var input = label.appendChild(document.createElement('input'));
     var title = label.appendChild(document.createTextNode(text));
 
@@ -28,11 +19,15 @@ document.addEventListener('DOMContentLoaded', function(){
   };
   
   var buildQuiz = function(quizNode){
-    var formNode = quizNode.nextElementSibling;
+    var formNode = quizNode.parentNode;
     var errorText = quizNode.getAttribute('data-' + NRKBCQ + '-error');
+    var correctText = quizNode.getAttribute('data-' + NRKBCQ + '-correct');
     var questions = parseQuiz(quizNode.getAttribute('data-' + NRKBCQ));
     var correctId = NRKBCQ + location.pathname + questions.map(function(q){return q.correct}).join('');
-    var errorNode = document.createElement('h3').appendChild(document.createTextNode(errorText)).parentNode;
+    var errorNode = document.createElement('p').appendChild(document.createTextNode(errorText)).parentNode;
+    errorNode.className = 'error';
+    var correctNode = document.createElement('p').appendChild(document.createTextNode(correctText)).parentNode;
+    correctNode.className = 'correct';
     var container = document.createElement('div');
     
     if(localStorage.getItem(correctId) === correctId){  //Skip quiz if already solved
@@ -47,17 +42,32 @@ document.addEventListener('DOMContentLoaded', function(){
         .forEach(function(node){node && container.appendChild(node)});
     });
 
+    // Disable form textareas until quiz is answered correctly.
+    var el;
+    formNode.querySelectorAll( 'textarea' ).forEach( function (el) {
+      el.setAttribute( 'disabled', 'disabled' );
+    });
+
     quizNode.appendChild(container);
     quizNode.addEventListener('change', function(){
       var checked = questions.map(function(q,i){return container.querySelector('input[name="' + NRKBCQ + i + '"]:checked')});
       var correct = questions.every(function(q,i){return checked[i] && Number(checked[i].value) === Number(q.correct)});
       var failure = !correct && checked.filter(Boolean).length === questions.length;
       
-      if(correct){
-        localStorage.setItem(correctId, correctId);
-        removeQuiz(quizNode, formNode);
-      }else if(failure){
-        container.appendChild(errorNode);
+      if ( correct ) {
+        if ( el = quizNode.querySelector('.error') ) {
+            el.parentNode.removeChild( el );
+        }
+        localStorage.setItem( correctId, correctId );
+        container.appendChild( correctNode );
+        formNode.querySelectorAll( 'textarea' ).forEach( function (el) {
+          el.removeAttribute( 'disabled' );
+        });
+      } else if ( failure ) {
+        if ( el = quizNode.querySelector('.correct') ) {
+            el.parentNode.removeChild( el );
+        }
+        container.appendChild( errorNode );
       }
     });
   };
