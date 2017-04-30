@@ -1,0 +1,84 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: NRKBeta Know2Comment\n"
+"POT-Creation-Date: 2017-04-30 15:33+0200\n"
+"PO-Revision-Date: 2017-04-30 15:34+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: Poedit 2.0.1\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: nrkbetaquiz.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: nrkbetaquiz.php:33
+msgid "You have not answered the quiz correctly. Try again."
+msgstr "Tato odpověď není správná. Zkuste to znovu."
+
+#: nrkbetaquiz.php:34
+msgid ""
+"Would you like to comment? Please answer some quiz questions from the story."
+msgstr "Chcete se zapojit do diskuse? Prosím odpovězte na otázky níže."
+
+#: nrkbetaquiz.php:36
+msgid "We care about our comments."
+msgstr "Záleží nám na kvalitě této diskuse."
+
+#: nrkbetaquiz.php:37
+msgid ""
+"That's why we want to make sure that everyone who comments have actually "
+"read the story."
+msgstr ""
+"A proto si chceme být jisti, že každý komentující četl článek, který "
+"komentuje."
+
+#: nrkbetaquiz.php:38
+msgid "Answer a couple of questions from the story to unlock the comment form."
+msgstr "Odpovězte na pár otázek z články, abyste odemkli formulář."
+
+#: nrkbetaquiz.php:40
+#, php-format
+msgid "Please %1$senable javascript%2$s to comment"
+msgstr "Prosím %1$spovolte javascript%2$s pro komentáře"
+
+#: nrkbetaquiz.php:51
+msgid "Add question +"
+msgstr "Přidat otázku +"
+
+#: nrkbetaquiz.php:52
+msgid "Correct"
+msgstr "Správně"
+
+#: nrkbetaquiz.php:53
+msgid "Answer"
+msgstr "Odpověď"
+
+#: nrkbetaquiz.php:56
+msgid "Question"
+msgstr "Otázka"
+
+#. Plugin Name of the plugin/theme
+msgid "NRKBeta Know2Comment"
+msgstr "NRKBeta Know2Comment"
+
+#. Plugin URI of the plugin/theme
+msgid "https://nrkbeta.no/"
+msgstr "https://nrkbeta.no/"
+
+#. Description of the plugin/theme
+msgid "Require the user to answer a quiz to be able to post comments."
+msgstr "Uživatel musí odpovědět na kvíz, aby mohl přidat komentáře."
+
+#. Author of the plugin/theme
+msgid "Henrik Lied and Eirik Backer, Norwegian Broadcasting Corporation"
+msgstr "Henrik Lied and Eirik Backer, Norwegian Broadcasting Corporation"
