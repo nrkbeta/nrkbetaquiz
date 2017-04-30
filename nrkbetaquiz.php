@@ -22,8 +22,10 @@ function nrkbetaquiz_localize_plugin() {
 }
 
 add_action('wp_enqueue_scripts', function(){
-  wp_enqueue_script(NRKBCQ, plugins_url('nrkbetaquiz.js', __FILE__));
-  wp_enqueue_style(NRKBCQ, plugins_url('nrkbetaquiz.css', __FILE__));
+  if( comments_open() ) {
+    wp_enqueue_script(NRKBCQ, plugins_url('nrkbetaquiz.js', __FILE__));
+    wp_enqueue_style(NRKBCQ, plugins_url('nrkbetaquiz.css', __FILE__));
+  }
 });
 
 add_action('comment_form_before', 'nrkbetaquiz_form');
