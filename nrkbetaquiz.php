@@ -31,7 +31,7 @@ function nrkbetaquiz_form(){ ?>
   <div class="<?php echo NRKBCQ; ?>"
     data-<?php echo NRKBCQ; ?>="<?php echo esc_attr(rawurlencode(json_encode(get_post_meta(get_the_ID(), NRKBCQ)))); ?>"
     data-<?php echo NRKBCQ; ?>-error="<?php echo esc_attr(__('You have not answered the quiz correctly. Try again.', NRKBCQ)); ?>">
-    <h2><?php _e('Would you like to comment? Please answer some quiz questions from the story.', 'NRKBCQ'); ?></h2>
+    <h2><?php _e('Would you like to comment? Please answer some quiz questions from the story.', NRKBCQ); ?></h2>
     <p>
       <?php _e('We care about our comments.', NRKBCQ); ?>
       <?php _e("That's why we want to make sure that everyone who comments have actually read the story.", NRKBCQ); ?>
