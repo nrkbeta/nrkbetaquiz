@@ -23,16 +23,21 @@ function nrkbetaquiz_localize_plugin() {
 
 add_action('wp_enqueue_scripts', function(){
   if( comments_open() ) {
-    wp_enqueue_script(NRKBCQ, plugins_url('nrkbetaquiz.js', __FILE__));
+    global $post;
+    wp_register_script( NRKBCQ, plugins_url('nrkbetaquiz.js', __FILE__) );
+		wp_enqueue_script( NRKBCQ);
+		$params = array(
+			'questions'       => esc_attr(rawurlencode(json_encode(get_post_meta($post->ID, NRKBCQ)))),
+			'i18n_error'     => __('You have not answered the quiz correctly. Try again.', NRKBCQ),		
+		);
+		wp_localize_script( NRKBCQ, 'nrkbcq', $params );
     wp_enqueue_style(NRKBCQ, plugins_url('nrkbetaquiz.css', __FILE__));
   }
 });
 
 add_action('comment_form_before', 'nrkbetaquiz_form');
 function nrkbetaquiz_form(){ ?>
-  <div class="<?php echo NRKBCQ; ?>"
-    data-<?php echo NRKBCQ; ?>="<?php echo esc_attr(rawurlencode(json_encode(get_post_meta(get_the_ID(), NRKBCQ)))); ?>"
-    data-<?php echo NRKBCQ; ?>-error="<?php echo esc_attr(__('You have not answered the quiz correctly. Try again.', NRKBCQ)); ?>">
+  <div class="<?php echo NRKBCQ; ?>">
     <h2><?php _e('Would you like to comment? Please answer some quiz questions from the story.', NRKBCQ); ?></h2>
     <p>
       <?php _e('We care about our comments.', NRKBCQ); ?>

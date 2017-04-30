@@ -29,10 +29,9 @@ document.addEventListener('DOMContentLoaded', function(){
   
   var buildQuiz = function(quizNode){
     var formNode = quizNode.nextElementSibling;
-    var errorText = quizNode.getAttribute('data-' + NRKBCQ + '-error');
-    var questions = parseQuiz(quizNode.getAttribute('data-' + NRKBCQ));
+    var questions = parseQuiz(nrkbcq.questions);
     var correctId = NRKBCQ + location.pathname + questions.map(function(q){return q.correct}).join('');
-    var errorNode = document.createElement('h3').appendChild(document.createTextNode(errorText)).parentNode;
+    var errorNode = document.createElement('h3').appendChild(document.createTextNode(nrkbcq.i18n_error)).parentNode;
     var container = document.createElement('div');
     
     if(localStorage.getItem(correctId) === correctId){  //Skip quiz if already solved
