@@ -1,32 +1,50 @@
 <?php
 /*
 Plugin Name: NRKBeta Know2Comment
-Version: 1.0.0
+Version: 1.0.1
 Plugin URI: https://nrkbeta.no/
 Author: Henrik Lied and Eirik Backer, Norwegian Broadcasting Corporation
 Description: Require the user to answer a quiz to be able to post comments.
 */
 
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
+
 define('NRKBCQ', 'nrkbetaquiz');
 define('NRKBCQ_NONCE', NRKBCQ . '-nonce');
 
+// Load textdomain
+add_action( 'init', 'nrkbetaquiz_localize_plugin' );
+function nrkbetaquiz_localize_plugin() {
+    load_plugin_textdomain( 'nrkbetaquiz', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+}
+
 add_action('wp_enqueue_scripts', function(){
-  wp_enqueue_script(NRKBCQ, plugins_url('nrkbetaquiz.js', __FILE__));
-  wp_enqueue_style(NRKBCQ, plugins_url('nrkbetaquiz.css', __FILE__));
+  if( comments_open() ) {
+    global $post;
+    wp_register_script( NRKBCQ, plugins_url('nrkbetaquiz.js', __FILE__) );
+		wp_enqueue_script( NRKBCQ);
+		$params = array(
+			'questions'       => esc_attr(rawurlencode(json_encode(get_post_meta($post->ID, NRKBCQ)))),
+			'i18n_error'     => __('You have not answered the quiz correctly. Try again.', NRKBCQ),		
+		);
+		wp_localize_script( NRKBCQ, 'nrkbcq', $params );
+    wp_enqueue_style(NRKBCQ, plugins_url('nrkbetaquiz.css', __FILE__));
+  }
 });
 
 add_action('comment_form_before', 'nrkbetaquiz_form');
 function nrkbetaquiz_form(){ ?>
-  <div class="<?php echo NRKBCQ; ?>"
-    data-<?php echo NRKBCQ; ?>="<?php echo esc_attr(rawurlencode(json_encode(get_post_meta(get_the_ID(), NRKBCQ)))); ?>"
-    data-<?php echo NRKBCQ; ?>-error="<?php echo esc_attr(__('You have not answered the quiz correctly. Try again.', NRKBCQ)); ?>">
-    <h2>Would you like to comment? Please answer some quiz questions from the story.</h2>
+  <div class="<?php echo NRKBCQ; ?>">
+    <h2><?php _e('Would you like to comment? Please answer some quiz questions from the story.', NRKBCQ); ?></h2>
     <p>
-      We care about our comments.
-      That's why we want to make sure that everyone who comments have actually read the story.
-      Answer a couple of questions from the story to unlock the comment form.
+      <?php _e('We care about our comments.', NRKBCQ); ?>
+      <?php _e("That's why we want to make sure that everyone who comments have actually read the story.", NRKBCQ); ?>
+      <?php _e('Answer a couple of questions from the story to unlock the comment form.', NRKBCQ); ?>
     </p>
-    <noscript>Please <a href="http://enable-javascript.com/" target="_blank" style="text-decoration:underline">enable javascript</a> to comment</noscript>
+    <noscript><?php printf( __( 'Please %1$senable javascript%2$s to comment', NRKBCQ ) , '<a href="http://enable-javascript.com/" target="_blank" style="text-decoration:underline">', '</a>' ); ?></noscript>
   </div>
 <?php }
 
