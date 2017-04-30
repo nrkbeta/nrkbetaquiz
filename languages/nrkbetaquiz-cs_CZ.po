@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: NRKBeta Know2Comment\n"
-"POT-Creation-Date: 2017-04-30 15:58+0200\n"
-"PO-Revision-Date: 2017-04-30 15:58+0200\n"
+"POT-Creation-Date: 2017-04-30 16:41+0200\n"
+"PO-Revision-Date: 2017-04-30 16:41+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs\n"
@@ -21,20 +21,20 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: nrkbetaquiz.php:33
+#: nrkbetaquiz.php:31
 msgid "You have not answered the quiz correctly. Try again."
 msgstr "Tato odpověď není správná. Zkuste to znovu."
 
-#: nrkbetaquiz.php:34
+#: nrkbetaquiz.php:41
 msgid ""
 "Would you like to comment? Please answer some quiz questions from the story."
 msgstr "Chcete se zapojit do diskuse? Prosím odpovězte na otázky níže."
 
-#: nrkbetaquiz.php:36
+#: nrkbetaquiz.php:43
 msgid "We care about our comments."
 msgstr "Záleží nám na kvalitě této diskuse."
 
-#: nrkbetaquiz.php:37
+#: nrkbetaquiz.php:44
 msgid ""
 "That's why we want to make sure that everyone who comments have actually "
 "read the story."
@@ -42,28 +42,28 @@ msgstr ""
 "A proto si chceme být jisti, že každý komentující četl článek, který "
 "komentuje."
 
-#: nrkbetaquiz.php:38
+#: nrkbetaquiz.php:45
 msgid "Answer a couple of questions from the story to unlock the comment form."
 msgstr "Odpovězte na pár otázek z články, abyste odemkli formulář."
 
-#: nrkbetaquiz.php:40
+#: nrkbetaquiz.php:47
 #, php-format
 msgid "Please %1$senable javascript%2$s to comment"
 msgstr "Prosím %1$spovolte javascript%2$s pro komentáře"
 
-#: nrkbetaquiz.php:51
+#: nrkbetaquiz.php:58
 msgid "Add question +"
 msgstr "Přidat otázku +"
 
-#: nrkbetaquiz.php:52
+#: nrkbetaquiz.php:59
 msgid "Correct"
 msgstr "Správně"
 
-#: nrkbetaquiz.php:53
+#: nrkbetaquiz.php:60
 msgid "Answer"
 msgstr "Odpověď"
 
-#: nrkbetaquiz.php:56
+#: nrkbetaquiz.php:63
 msgid "Question"
 msgstr "Otázka"
 
