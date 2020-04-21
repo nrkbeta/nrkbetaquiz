@@ -88,8 +88,15 @@ function nrkbetaquiz_save($post_id, $post, $update){
 
         // Sanitizing data input
         foreach ( $v as $key => $value ) {
-          $key = wp_kses_post( $key );
-          $value = wp_kses_post( $value );
+          $key = sanitize_text_field( $key ); // Best to remove any tags, line breaks, etc
+
+          $cleaned_answers = array();
+          foreach( $v['answer'] as $answer_value ) {
+              if( $answer_value )
+                $cleaned_answers[] = sanitize_text_field( $answer_value ); // And best to remove any tags, line breaks, etc, from answers too
+          }
+          $v['answer'] = $cleaned_answers;
+
           $v[$key] = $value;
         }
 
